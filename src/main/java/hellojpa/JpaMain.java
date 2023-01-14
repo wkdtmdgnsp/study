@@ -75,10 +75,19 @@ public class JpaMain {
 
             // flush 하면 바로 쿼리 생성하여 sql 임시 저장소에 저장하고
             // 데이터베이스에 동기화
-            Member member = new Member(200L, "member200");
-            em.persist(member);
+//            em.flush();
+//            Member member = new Member(200L, "member200");
+//            em.persist(member);
 
-            em.flush();
+            // detach로 member를 사용하여 준영속이 되면 JPA가 관리하지 않기 떄문에
+            // 커밋 시점에 아무일도 일어 나지 않는다.
+            // clear 해버리면 영속성 컨텐츠를 비우기 떄문에 같은걸 조회하면 db에서 다시 조회한다.
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAAA");
+
+//            em.detach(member);
+            em.clear();
+            Member member2 = em.find(Member.class, 150L);
 
             System.out.println("===================");
             tx.commit();
