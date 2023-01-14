@@ -60,12 +60,12 @@ public class JpaMain {
 //            Member member2 = new Member(160L, "B");
 //            em.persist(member1);
 //            em.persist(member2);
-//            System.out.println("===================");
 
             // 변경 감지 : 1차 캐시에서 스냅샷(find 값)과 Entity(객체) 비교하여 값이 다르면
+            // sql 임시 저장소에 저장하고
             // 커밋 시점에 DB에 update 쿼리 보냄.
-            Member member = em.find(Member.class, 150L);
-            member.setName("ZZZZZ");
+//            Member member = em.find(Member.class, 150L);
+//            member.setName("ZZZZZ");
 
             // 잘못 된 예
             // persist 해버리면 덮어쓰기 되어서 set 하지 않은 값은 null 됨.
@@ -73,6 +73,14 @@ public class JpaMain {
 //                em.persist(member);
 //            }
 
+            // flush 하면 바로 쿼리 생성하여 sql 임시 저장소에 저장하고
+            // 데이터베이스에 동기화
+            Member member = new Member(200L, "member200");
+            em.persist(member);
+
+            em.flush();
+
+            System.out.println("===================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
