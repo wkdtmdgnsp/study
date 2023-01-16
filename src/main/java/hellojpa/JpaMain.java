@@ -82,14 +82,38 @@ public class JpaMain {
             // detach로 member를 사용하여 준영속이 되면 JPA가 관리하지 않기 떄문에
             // 커밋 시점에 아무일도 일어 나지 않는다.
             // clear 해버리면 영속성 컨텐츠를 비우기 떄문에 같은걸 조회하면 db에서 다시 조회한다.
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAAA");
+//            Member member = em.find(Member.class, 150L);
+//            member.setName("AAAAA");
 
 //            em.detach(member);
-            em.clear();
-            Member member2 = em.find(Member.class, 150L);
+//            em.clear();
+//            Member member2 = em.find(Member.class, 150L);
+//
+            Member member1 = new Member();
+            member1.setUsername("A");
+
+            Member member2 = new Member();
+            member2.setUsername("B");
+
+            Member member3 = new Member();
+            member3.setUsername("C");
 
             System.out.println("===================");
+
+            // DB SEQ = 1   |   1
+            // DB SEQ = 51  |   2
+            // DB SEQ = 51  |   3
+
+            em.persist(member1); // 1, 51
+            em.persist(member2); // MEM
+            em.persist(member3); // MEM
+
+            System.out.println("member1.getId() = " + member1.getId());
+            System.out.println("member2.getId() = " + member2.getId());
+            System.out.println("member3.getId() = " + member3.getId());
+
+            System.out.println("===================");
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
