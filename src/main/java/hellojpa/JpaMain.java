@@ -118,6 +118,12 @@ public class JpaMain {
              * 객체를 테이블에 맞춘 데이터 중심 모델링 하면
              * 객체지향적인 협력 관계를 만들 수 없다.
               */
+
+            /**
+             * @JoinColumn이 있는 연관관계의 주인에 값을 입력 해야 한다.
+             * 역방향은 null 오류
+             * 객체 관계를 고려하여 양쪽 다 값을 입력 해야 한다.
+             */
             // 저장
             Team team = new Team();
             team.setName("TeamA");
@@ -125,18 +131,19 @@ public class JpaMain {
 
             Member member = new Member();
             member.setUsername("member1");
-            member.setTeam(team);
             em.persist(member);
+
+            team.addMember(member);
 
             em.flush();
             em.clear();
 
-            Member findMember = em.find(Member.class, member.getId());
-            List<Member> members = findMember.getTeam().getMembers();
+            Team findTeam = em.find(Team.class, team.getId()); // 1차 캐시
+            List<Member> members = findTeam.getMembers();
 
-            for (Member m : members) {
-                System.out.println("m.getUsername() = " + m.getUsername());
-            }
+            System.out.println("===================");
+            System.out.println("findTeam = " + findTeam);
+            System.out.println("===================");
 
             tx.commit();
         } catch (Exception e) {
