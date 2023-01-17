@@ -89,30 +89,56 @@ public class JpaMain {
 //            em.clear();
 //            Member member2 = em.find(Member.class, 150L);
 //
-            Member member1 = new Member();
-            member1.setUsername("A");
+//            Member member1 = new Member();
+//            member1.setUsername("A");
+//
+//            Member member2 = new Member();
+//            member2.setUsername("B");
+//
+//            Member member3 = new Member();
+//            member3.setUsername("C");
+//
+//            System.out.println("===================");
+//
+//            // DB SEQ = 1   |   1
+//            // DB SEQ = 51  |   2
+//            // DB SEQ = 51  |   3
+//
+//            em.persist(member1); // 1, 51
+//            em.persist(member2); // MEM
+//            em.persist(member3); // MEM
+//
+//            System.out.println("member1.getId() = " + member1.getId());
+//            System.out.println("member2.getId() = " + member2.getId());
+//            System.out.println("member3.getId() = " + member3.getId());
+//
+//            System.out.println("===================");
 
-            Member member2 = new Member();
-            member2.setUsername("B");
+            /**
+             * 객체를 테이블에 맞춘 데이터 중심 모델링 하면
+             * 객체지향적인 협력 관계를 만들 수 없다.
+              */
+            // 저장
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
 
-            Member member3 = new Member();
-            member3.setUsername("C");
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setTeam(team);
+            em.persist(member);
 
-            System.out.println("===================");
+            em.flush();
+            em.clear();
 
-            // DB SEQ = 1   |   1
-            // DB SEQ = 51  |   2
-            // DB SEQ = 51  |   3
+            Member findMember = em.find(Member.class, member.getId());
 
-            em.persist(member1); // 1, 51
-            em.persist(member2); // MEM
-            em.persist(member3); // MEM
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam.getName() = " + findTeam.getName());
 
-            System.out.println("member1.getId() = " + member1.getId());
-            System.out.println("member2.getId() = " + member2.getId());
-            System.out.println("member3.getId() = " + member3.getId());
-
-            System.out.println("===================");
+            //
+            Team newTeam = em.find(Team.class, 100L);
+            findMember.setTeam(newTeam);
 
             tx.commit();
         } catch (Exception e) {
