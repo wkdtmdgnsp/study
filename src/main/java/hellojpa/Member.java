@@ -1,6 +1,8 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // @SequenceGenerator 시퀀스 정보 직접 지정
 // @SequenceGenerator(name = "member_seq_generator", sequenceName = "member_seq")
@@ -40,6 +42,9 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<MemberProduct>();
 
     public Long getId() {
         return id;
