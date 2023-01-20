@@ -1,6 +1,7 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
 // @SequenceGenerator(name = "member_seq_generator", sequenceName = "member_seq")
 // @TableGenerator 테이블을 활용해 시퀀스 처럼 사용한다. 성능은 떨어지지만 모든 DB에서 적용 가능, 잘안씀
 @Entity
-public class Member {
+public class Member extends BaseEntity {
 
     // @Id 직접 할당
     // @GeneratedValue 자동 할당
