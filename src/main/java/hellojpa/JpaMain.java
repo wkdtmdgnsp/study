@@ -20,70 +20,43 @@ public class JpaMain {
 
         try {
 
-//            Member member1 = new Member();
-//            member1.setUsername("member1");
-//            em.persist(member1);
-//
-//            Member member2 = new Member();
-//            member2.setUsername("member2");
-//            em.persist(member2);
-//
-//            em.flush();
-//            em.clear();
-//
-//            Member m1 = em.find(Member.class, member1.getId());
-//            Member m2 = em.getReference(Member.class, member2.getId());
-//
-//            logic(m1, m2);
+            Team teamA = new Team();
+            teamA.setName("teamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
 
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setTeam(teamA);
             em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member1");
+            member2.setTeam(teamB);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
             /**
-             * 1차 캐시에 엔티티가 이미 있으면
-             * getReference를 호출해도 실제 엔티티를 반환
-             * 반대도 마찬가지
+             * fetch LAZY, EAGER
              */
-//            Member m1 = em.find(Member.class, member1.getId());
-//            System.out.println("m1.getClass() = " + m1.getClass());
+//            Member m = em.find(Member.class, member1.getId());
 //
-//            Member reference = em.getReference(Member.class, member1.getId());
-//            System.out.println("reference.getClass() = " + reference.getClass());
+//            System.out.println("m = " + m.getTeam().getClass());
 //
-//            System.out.println("a == a : " + (m1 == reference));
+//            System.out.println("==============");
+//            System.out.println("m.getTeam().getName() = " + m.getTeam().getName());
+//            System.out.println("==============");
 
-//            Member refMember = em.getReference(Member.class, member1.getId());
-//            System.out.println("m1.getClass() = " + refMember.getClass()); // Proxy
-//
-//            Member findMember = em.find(Member.class, member1.getId());
-//            System.out.println("reference.getClass() = " + findMember.getClass()); // Member
-//
-//            System.out.println("a == a : " + (refMember == findMember));
+            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
+                    .getResultList();
 
-            /**
-             * EntityManager 종료 되어 있고,
-             * 프록시 객체를 초기화 하면
-             * LazyInitializationException 에러 발생
-             */
-            
-//            Member refMember = em.getReference(Member.class, member1.getId());
-//            System.out.println("m1.getClass() = " + refMember.getClass()); // Proxy
-//
-////            em.detach(refMember);
-////            em.close();
-//            em.clear();
-//
-//            refMember.getUsername();
-
-            Member refMember = em.getReference(Member.class, member1.getId());
-            System.out.println("m1.getClass() = " + refMember.getClass()); // Proxy
-//            refMember.getUsername(); // 강제 초기화
-//            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
-            Hibernate.initialize(refMember); // 강제 초기화
+            // SQL : select * from Member
+            // SQL : select * from Member where TEAM_ID = xxx
 
             tx.commit();
         } catch (Exception e) {
@@ -94,14 +67,5 @@ public class JpaMain {
         }
         emf.close();
     }
-
-    /**
-     * 프록시 객체는 원본 엔티티를 상속 받음
-     * 프록시 객체 비교시 instanceof 사용
-     */
-//    private static void logic(Member m1, Member m2) {
-//        System.out.println("m1 == m2 : " + (m1 instanceof Member));
-//        System.out.println("m1 == m2 : " + (m2 instanceof Member));
-//    }
 
 }
