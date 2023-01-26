@@ -17,25 +17,38 @@ public class JpaMain {
 
         try {
 
-            for (int i=0; i<100; i++) {
-                Member member = new Member();
-                member.setUsername("member" +i);
-                member.setAge(i);
-                em.persist(member);
-            }
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setAge(10);
+
+            member.setTeam(team);
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(10)
-                    .setMaxResults(10)
-                    .getResultList();
+            // inner join
+//            String qlString = "select m from Member m join m.team t";
 
-            System.out.println("result.size() = " + result.size());
-            for (Member member1 : result) {
-                System.out.println("member1 = " + member1);
-            }
+            // left join
+//            String qlString = "select m from Member m left join m.team t";
+
+            // 세타(cross) join
+//            String qlString = "select m from Member m, Team t where m.username = t.name";
+
+            // join on
+//            String qlString = "select m from Member m left join m.team t on t.name='teamA'";
+
+            // 연관 관계 없는 엔티티 조인
+            String qlString = "select m from Member m left join Team t on m.username = t.name";
+
+            List<Member> result = em.createQuery(qlString, Member.class)
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e) {
