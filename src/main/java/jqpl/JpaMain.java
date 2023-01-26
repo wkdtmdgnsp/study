@@ -24,6 +24,7 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("member1");
             member.setAge(10);
+            member.setType(MemberType.ADMIN);
 
             member.setTeam(team);
 
@@ -32,11 +33,19 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            // from (서브 쿼리) 불가
-            // select (서브 쿼리)
-            String qlString = "select (select avg(m1.age) from Member m1) as avgAge from Member m left join Team t on m.username = t.name";
-            List<Member> result = em.createQuery(qlString, Member.class)
+            // jpql 타입 표현
+            // enum 타입은 바인딩 하지 않을떈 패키지명 포함
+            String qlString = "select m.username, 'HELLO', TRUE from Member m " +
+                    "where m.type = :userType";
+            List<Object[]> result = em.createQuery(qlString)
+                    .setParameter("userType", MemberType.ADMIN)
                     .getResultList();
+
+            for (Object[] objects : result) {
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }
 
             tx.commit();
         } catch (Exception e) {
