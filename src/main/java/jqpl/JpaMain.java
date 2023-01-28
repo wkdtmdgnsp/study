@@ -22,7 +22,7 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername("member1");
+            member.setUsername("관리자");
             member.setAge(10);
             member.setType(MemberType.ADMIN);
 
@@ -30,21 +30,29 @@ public class JpaMain {
 
             em.persist(member);
 
-            em.flush();
-            em.clear();
+            // 조건식 case
+//            String query =
+//                    "select " +
+//                            "case when m.age <= 10 then '학생요금'" +
+//                            "     when m.age >= 60 then '경로요금'" +
+//                            "     else '일반요금'" +
+//                            "end " +
+//                    "from Member m ";
 
-            // jpql 타입 표현
-            // enum 타입은 바인딩 하지 않을떈 패키지명 포함
-            String qlString = "select m.username, 'HELLO', TRUE from Member m " +
-                    "where m.type = :userType";
-            List<Object[]> result = em.createQuery(qlString)
-                    .setParameter("userType", MemberType.ADMIN)
+            // coalesce 하나씩 조회해서 null 아니면 반환
+//            String query =
+//                    "select coalesce(m.username, '이름 없는 회원') as username " +
+//                            "from Member m";
+
+            // nullif 두 값이 같으면 null 반환, 다르면 첫번째 값 반환
+            String query =
+                    "select nullif(m.username, '관리자') as username " +
+                            "from Member m";
+            List<String> result = em.createQuery(query, String.class)
                     .getResultList();
 
-            for (Object[] objects : result) {
-                System.out.println("objects = " + objects[0]);
-                System.out.println("objects = " + objects[1]);
-                System.out.println("objects = " + objects[2]);
+            for (String s : result) {
+                System.out.println("s = " + s);
             }
 
             tx.commit();
