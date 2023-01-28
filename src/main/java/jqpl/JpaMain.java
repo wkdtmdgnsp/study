@@ -17,37 +17,41 @@ public class JpaMain {
 
         try {
 
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Member member1 = new Member();
+            member1.setUsername("관리자1");
+            member1.setAge(10);
+            member1.setType(MemberType.ADMIN);
+            em.persist(member1);
 
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setType(MemberType.ADMIN);
+            Member member2 = new Member();
+            member2.setUsername("관리자2");
+            member2.setAge(10);
+            member2.setType(MemberType.ADMIN);
+            em.persist(member2);
 
-            member.setTeam(team);
-
-            em.persist(member);
-
-            // 조건식 case
+            // concat 문자열 합치기
 //            String query =
-//                    "select " +
-//                            "case when m.age <= 10 then '학생요금'" +
-//                            "     when m.age >= 60 then '경로요금'" +
-//                            "     else '일반요금'" +
-//                            "end " +
-//                    "from Member m ";
+//                    "select concat('a', 'b') from Member m";
 
-            // coalesce 하나씩 조회해서 null 아니면 반환
+            // substring 문자열 자르기
 //            String query =
-//                    "select coalesce(m.username, '이름 없는 회원') as username " +
-//                            "from Member m";
+//                    "select substring(m.username, 2, 3) from Member m";
 
-            // nullif 두 값이 같으면 null 반환, 다르면 첫번째 값 반환
+            // locate
+//            String query =
+//                    "select locate('de', 'abcdef') from Member m";
+
+            // size 컬렉션의 크기
+//            String query =
+//                    "select size(t.members) from Team t";
+
+            // index 컬렉션의 위치 값 찾을때 사용
+//            String query =
+//                    "select index(t.members) from Team t";
+
+            // 사용자 정의 함수
             String query =
-                    "select nullif(m.username, '관리자') as username " +
-                            "from Member m";
+                    "select function('group_concat', m.username ) from Member m";
             List<String> result = em.createQuery(query, String.class)
                     .getResultList();
 
