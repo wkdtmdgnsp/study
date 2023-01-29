@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -18,35 +17,95 @@ public class JpaMain {
 
         try {
 
-            Team team = new Team();
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
 
             Member member1 = new Member();
-            member1.setUsername("관리자1");
-            member1.setTeam(team);
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
             em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("관리자2");
-            member2.setTeam(team);
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            /**
-             * 경로 표현식
-             * m.username -> 상태 필드 : 경로 탐색의 끝. 탐색 X
-             * m.team -> 단일 값 연관 필드 : 묵시적 내부 조인 발생. 탐색 O
-             * t.members -> 켤렉션 값 연관 필드 : 묵시적 내부 조인 발생. 탐색 X
-             * join t.members m -> 명시적 조인으로 탐색O
-             */
-            String query = "select m from Team t join t.members m";
+//            String query = "select m from Member m";
 
-            List<Collection> result = em.createQuery(query, Collection.class)
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member.getUsername() +", " +member.getTeam().getName());
+//                // 회원1, 팀A(SQL)
+//                // 회원2, 팀A(1차캐시)
+//                // 회원3. 팀B(SQL)
+//
+//                // 회원 100명 -> N +1
+//            }
+
+            // fetch join
+//            String query = "select m from Member m join fetch m.team";
+
+            // collection fetch join
+//            String query = "select t from Team t join fetch t.members";
+//
+//            List<Team> result = em.createQuery(query, Team.class)
+//                    .getResultList();
+//
+//            for (Team team : result) {
+//                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
+//                for (Member member : team.getMembers()) {
+//                    System.out.println(" -> member = " + member);
+//                }
+//            }
+
+            /**
+             * distinct
+             * sql distinct 추가
+             * 일대다에서 추가로 애플리케이션에서 엔티티 중복 제거 시도
+             */
+//            String query = "select distinct t from Team t join fetch t.members";
+//
+//            List<Team> result = em.createQuery(query, Team.class)
+//                    .getResultList();
+//
+//            System.out.println("result = " + result.size());
+//
+//            for (Team team : result) {
+//                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
+//                for (Member member : team.getMembers()) {
+//                    System.out.println(" -> member = " + member);
+//                }
+//            }
+
+            // 일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음
+            String query = "select t from Team t join fetch t.members";
+
+            List<Team> result = em.createQuery(query, Team.class)
                     .getResultList();
 
-            System.out.println("result = " + result);
+            System.out.println("result = " + result.size());
+
+            for (Team team : result) {
+                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println(" -> member = " + member);
+                }
+            }
 
             tx.commit();
         } catch (Exception e) {
