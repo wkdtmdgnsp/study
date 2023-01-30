@@ -43,31 +43,19 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            /**
-             * 페치 조인
-             * 별칭 사용 하면 안된다.
-             * 컬렉션을 페치 조인하면 페이징 API 사용 불가
-             */
-            
-            // 일대다를 다대일로 반대로 해서 페이징
-//            String query = "select m from Member m join fetch m.team t";
+            // 엔티티 직접 사용
+            // 엔티티의 기본키 값이 SQL 에서 사용 됨
+//            String query = "select m from Member m where m.id = :memberId";
 
-            // 다대일에서
-            // @BatchSize(size = 100) or default_batch_fetch_size 글로벌 세팅
-            String query = "select t from Team t";
+            // 엔티티 직접 사용 - 외래 키 값
+            String query = "select m from Member m where m.team = :team";
 
-            List<Team> result = em.createQuery(query, Team.class)
-                    .setFirstResult(0)
-                    .setMaxResults(2)
+            List<Member> members = em.createQuery(query, Member.class)
+                    .setParameter("team", teamA)
                     .getResultList();
 
-            System.out.println("result = " + result.size());
-
-            for (Team team : result) {
-                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
-                for (Member member : team.getMembers()) {
-                    System.out.println(" -> member = " + member);
-                }
+            for (Member member : members) {
+                System.out.println("member = " + member);
             }
 
             tx.commit();
