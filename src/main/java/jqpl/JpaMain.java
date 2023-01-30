@@ -43,59 +43,22 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-//            String query = "select m from Member m";
-
-//            List<Member> result = em.createQuery(query, Member.class)
-//                    .getResultList();
-//
-//            for (Member member : result) {
-//                System.out.println("member = " + member.getUsername() +", " +member.getTeam().getName());
-//                // 회원1, 팀A(SQL)
-//                // 회원2, 팀A(1차캐시)
-//                // 회원3. 팀B(SQL)
-//
-//                // 회원 100명 -> N +1
-//            }
-
-            // fetch join
-//            String query = "select m from Member m join fetch m.team";
-
-            // collection fetch join
-//            String query = "select t from Team t join fetch t.members";
-//
-//            List<Team> result = em.createQuery(query, Team.class)
-//                    .getResultList();
-//
-//            for (Team team : result) {
-//                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
-//                for (Member member : team.getMembers()) {
-//                    System.out.println(" -> member = " + member);
-//                }
-//            }
-
             /**
-             * distinct
-             * sql distinct 추가
-             * 일대다에서 추가로 애플리케이션에서 엔티티 중복 제거 시도
+             * 페치 조인
+             * 별칭 사용 하면 안된다.
+             * 컬렉션을 페치 조인하면 페이징 API 사용 불가
              */
-//            String query = "select distinct t from Team t join fetch t.members";
-//
-//            List<Team> result = em.createQuery(query, Team.class)
-//                    .getResultList();
-//
-//            System.out.println("result = " + result.size());
-//
-//            for (Team team : result) {
-//                System.out.println("team.getName() = " + team.getName() +" |members=" +team.getMembers().size());
-//                for (Member member : team.getMembers()) {
-//                    System.out.println(" -> member = " + member);
-//                }
-//            }
+            
+            // 일대다를 다대일로 반대로 해서 페이징
+//            String query = "select m from Member m join fetch m.team t";
 
-            // 일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음
-            String query = "select t from Team t join fetch t.members";
+            // 다대일에서
+            // @BatchSize(size = 100) or default_batch_fetch_size 글로벌 세팅
+            String query = "select t from Team t";
 
             List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
                     .getResultList();
 
             System.out.println("result = " + result.size());
