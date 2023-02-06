@@ -168,6 +168,8 @@ public class ValidationItemControllerV2 {
         log.info("target={}", bindingResult.getTarget());
 
         // 검증 로직
+//        ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
+
         if (!StringUtils.hasText(item.getItemName())) {
             // messageCodesResolver
             // 디테일 required.item.itemName 없으면 범용 required 사용
