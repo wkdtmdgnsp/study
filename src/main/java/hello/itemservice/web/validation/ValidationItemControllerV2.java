@@ -169,6 +169,8 @@ public class ValidationItemControllerV2 {
 
         // 검증 로직
         if (!StringUtils.hasText(item.getItemName())) {
+            // messageCodesResolver
+            // 디테일 required.item.itemName 없으면 범용 required 사용
             bindingResult.rejectValue("itemName", "required");
         }
 
