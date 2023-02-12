@@ -1,11 +1,13 @@
 server:
   port: 8888
+
 spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/jpashop;
     username: sa
     password:
     driver-class-name: org.h2.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -13,6 +15,7 @@ spring:
       hibernate:
 #        show_sql: true
         format_sql: true
+        default_batch_fetch_size: 100
 
 logging:
   level:
